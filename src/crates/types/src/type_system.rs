@@ -13,7 +13,7 @@ pub enum PrimitiveType {
 }
 
 #[derive(Debug, Clone, Copy)]
-enum TypeCategory {
+pub enum TypeCategory {
     Number,
     Immutable,
     Mutable,
@@ -22,16 +22,7 @@ enum TypeCategory {
 }
 
 #[derive(Debug)]
-struct TypeInfo {
-    primitive: PrimitiveType,
-    category: TypeCategory,
-}
-
-#[derive(Debug)]
-struct Token<'src> {
-    pub start: u32,
-    pub current: u32,
-    pub line: u32,
-    pub type_info: TypeInfo,
-    pub token_str: &'src str,
+pub struct TypeInfo {
+    pub primitive: PrimitiveType,
+    pub category: TypeCategory,
 }

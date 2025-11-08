@@ -1,0 +1,12 @@
+[package]
+name = "db"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+path = "./src/lib.rs"
+
+[dependencies]
+postgres.workspace = true
+
+types ={ workspace = true }

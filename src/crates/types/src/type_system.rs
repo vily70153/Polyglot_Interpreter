@@ -21,8 +21,26 @@ pub enum TypeCategory {
     Callable,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct TypeInfo {
     pub primitive: PrimitiveType,
     pub category: TypeCategory,
+}
+
+#[derive(Debug, Clone)]
+pub enum TokenKind {
+    Identifier,
+    Keyword,
+    Literal(TypeInfo),
+    Operator,
+    Delimiter,
+}
+
+#[derive(Debug)]
+pub struct Token<'src> {
+    pub kind: TokenKind,
+    pub lexeme: &'src str,
+    pub line: u32,
+    pub start: u32,
+    pub end: u32,
 }

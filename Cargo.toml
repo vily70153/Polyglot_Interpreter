@@ -22,12 +22,15 @@ lexer = { path = "src/crates/lexer"}
 types = { path = "src/crates/types" }
 db = { path = "src/crates/db" }
 
+
 mysql = "26.0.1"
 diesel = { version = "2.1.0", features = ["mysql", "r2d2"] }
 dotenvy = "0.15"
+regex = "1"
 
 
 [dependencies]
+regex = { workspace = true }
 lexer = { workspace = true }
 types = { workspace = true }
 db = { workspace = true }

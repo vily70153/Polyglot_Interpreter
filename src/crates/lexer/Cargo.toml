@@ -10,4 +10,4 @@ path = "./src/lib.rs"
 types = { workspace = true }
 db = { workspace = true }
 
-postgres = { workspace = true }
+mysql = { workspace = true }

@@ -1,5 +1,5 @@
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum PrimitiveType {
     Int,
     Float,
@@ -12,7 +12,7 @@ pub enum PrimitiveType {
     Struct,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum TypeCategory {
     Number,
     Immutable,
@@ -21,13 +21,13 @@ pub enum TypeCategory {
     Callable,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct TypeInfo {
     pub primitive: PrimitiveType,
     pub category: TypeCategory,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum TokenKind {
     Identifier,
     Keyword,

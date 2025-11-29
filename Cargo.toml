@@ -1,6 +1,36 @@
+[workspace.package]
+name = "usqlrepl"
+version = "0.1.0"
+edition = "2024"
+
+
+[workspace]
+members = [
+  "src/crates/db",
+  "src/crates/lexer",
+  "src/crates/types",
+]
+resolver = "2"
+
 [package]
 name = "usqlrepl"
 version = "0.1.0"
 edition = "2024"
 
+[workspace.dependencies]
+lexer = { path = "src/crates/lexer"}
+types = { path = "src/crates/types" }
+db = { path = "src/crates/db" }
+
+mysql = "26.0.1"
+diesel = { version = "2.1.0", features = ["mysql", "r2d2"] }
+dotenvy = "0.15"
+
+
 [dependencies]
+lexer = { workspace = true }
+types = { workspace = true }
+db = { workspace = true }
+diesel = { workspace = true }
+dotenvy = { workspace = true }
+mysql = { workspace = true }

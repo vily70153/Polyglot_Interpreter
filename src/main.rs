@@ -4,6 +4,8 @@ use lexer::tokenizer;
 use dotenvy::dotenv;
 use std::env;
 
+mod logging;
+
 fn main() {
     dotenv().ok();
 
@@ -11,7 +13,7 @@ fn main() {
         env::var("DATABASE_URL")
                      .expect("DATABASE_URL must be set").as_str(), );
     let mut parser = tokenizer::Parser::new(_db);
-    let tokens = parser.parse("1 2234 131 функція нехай змінна змінна число");
+    let tokens = parser.parse("1 2234 131 'тетстовий текст' функція нехай змінна змінна число");
     for el in tokens {
         println!("{:?}", el);
     }

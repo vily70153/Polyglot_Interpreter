@@ -1,6 +1,8 @@
 use diesel::prelude::*;
 use diesel::r2d2::{self, ConnectionManager};
 
+use crate::model::{AllLexem, StdLexeme};
+
 #[derive(Queryable)] 
 pub struct LexemeTypeResult {
     pub lexem_type: String,
@@ -22,7 +24,7 @@ impl DB {
         DB { pool }
     }
 
-    pub fn select_lexem(&self, search_lexem: &str) -> Vec<String> {
+    pub fn select_lexem(&self, search_lexem: &str) -> Vec<(AllLexem, StdLexeme)> {
         let mut conn = self.pool.get().expect("Failed to get connection");
 
         use crate::schema::AllLexemsTBL::dsl as al;
@@ -31,8 +33,7 @@ impl DB {
         let results = al::AllLexemsTBL
             .inner_join(std::StdLexemeTBL.on(al::std_lexem.eq(std::id)))
             .filter(al::lexem.eq(search_lexem))
-            .select(std::lexem_type)
-            .load::<String>(&mut conn);
+            .load::<(AllLexem, StdLexeme)>(&mut conn);
 
         match results {
             Ok(rows) => rows,

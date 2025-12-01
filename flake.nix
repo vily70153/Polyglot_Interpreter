@@ -23,6 +23,11 @@
             clang
             llvmPackages.bintools
             rustup
+            diesel-cli
+            openssl
+            zstd
+            mysql80
+            pkg-config
           ];
 
           RUSTC_VERSION = overrides.toolchain.channel;
@@ -30,6 +35,9 @@
           # https://github.com/rust-lang/rust-bindgen#environment-variables
           LIBCLANG_PATH = pkgs.lib.makeLibraryPath [ pkgs.llvmPackages_latest.libclang.lib ];
           
+          OPENSSL_NO_VENDOR = 1; # Tells Rust to use the system OpenSSL, not build its own
+          OPENSSL_DIR = "${pkgs.openssl.dev}";
+          OPENSSL_LIB_DIR = "${pkgs.openssl.out}/lib";
           shellHook = ''
             export PATH=$PATH:''${CARGO_HOME:-~/.cargo}/bin
             export PATH=$PATH:''${RUSTUP_HOME:-~/.rustup}/toolchains/$RUSTC_VERSION-x86_64-unknown-linux-gnu/bin/

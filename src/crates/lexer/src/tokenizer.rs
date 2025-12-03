@@ -12,6 +12,8 @@ pub struct Token {
     pub lexem_type: String,
 }
 
+
+
 pub struct Parser {
     db: DB,
 }

@@ -1,6 +1,5 @@
 use std::{
   fs::{self, File},
-  path::PathBuf,
 };
 use tracing::*;
 use tracing_subscriber::EnvFilter;
@@ -8,12 +7,13 @@ use tracing_subscriber::EnvFilter;
 use shared::configuration::{LoggingLevel, CONFIG};
 use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt};
 
+
 pub fn init_logging() {
   let console_layer = fmt::layer().with_writer(std::io::stdout).pretty();
   let file_layer = fmt::layer().with_writer(make_writer()).with_ansi(false);
 
   let env_filter = EnvFilter::from_default_env()
-      .add_directive(CONFIG.logging.level)
+      .add_directive(CONFIG.logging.level.to_string().parse().unwrap())
       .add_directive("other_module=warn".parse().unwrap());
 
   let sub = tracing_subscriber::registry()
@@ -42,7 +42,7 @@ fn make_writer() -> File {
       chrono::Local::now().format("%Y-%m-%d_%H-%M-%S_")
   );
 
-  let path = PathBuf::from(&CONFIG.logging.get_folder());
+  let path = CONFIG.logging.get_folder().expect("Шлях до файлу не було знайдено");
   if !path.exists() {
       fs::create_dir_all(path)
           .expect("The application should be able to create folder to store logs.");

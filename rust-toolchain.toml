@@ -1,0 +1,3 @@
+[toolchain]
+channel = "nightly"       # or "1.68.2", "nightly-2025-05-10", etc.
+components = ["rustfmt", "clippy", "rust-analyzer"] # optional

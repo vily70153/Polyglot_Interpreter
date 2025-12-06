@@ -7,7 +7,7 @@ edition = "2024"
 path = "./src/lib.rs"
 
 [dependencies]
-types = { workspace = true }
 db = { workspace = true }
 regex = { workspace = true }
 mysql = { workspace = true }
+unicode-segmentation = { workspace = true }

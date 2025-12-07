@@ -266,7 +266,6 @@ version = "0.1.0"
 dependencies = [
  "diesel",
  "mysql",
- "shared",
  "tracing",
  "types",
 ]
@@ -1274,6 +1273,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "tests"
+version = "0.1.0"
+dependencies = [
+ "lexer",
+ "shared",
+]
+
+[[package]]
 name = "thiserror"
 version = "2.0.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1486,6 +1493,7 @@ dependencies = [
  "lexer",
  "regex",
  "shared",
+ "tests",
  "tokio",
  "tracing",
  "tracing-subscriber",

@@ -3,6 +3,8 @@ use diesel::r2d2::{self, ConnectionManager};
 
 use crate::model::{AllLexem, StdLexeme};
 
+use tracing::{*};
+
 #[derive(Queryable)] 
 pub struct LexemeTypeResult {
     pub lexem_type: String,
@@ -21,6 +23,7 @@ impl DB {
         let pool = r2d2::Pool::builder()
             .build(manager)
             .expect("Failed to create pool.");
+        info!("DB was created.");
         DB { pool }
     }
 
@@ -36,8 +39,14 @@ impl DB {
             .load::<(AllLexem, StdLexeme)>(&mut conn);
 
         match results {
-            Ok(rows) => rows,
-            Err(_) => vec![],
+            Ok(rows) => {
+                info!("Lexem loaded successfully: {}", search_lexem);
+                rows
+            },
+            Err(e) => {
+                error!("Error loading lexem '{}': {}", search_lexem, e);
+                vec![]
+            }
         }
     }
 }

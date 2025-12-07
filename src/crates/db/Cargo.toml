@@ -11,3 +11,5 @@ path = "./src/lib.rs"
 mysql = { workspace = true }
 types ={ workspace = true }
 diesel = { workspace = true }
+shared = { workspace = true }
+tracing = { workspace = true }

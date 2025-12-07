@@ -11,3 +11,7 @@ db = { workspace = true }
 regex = { workspace = true }
 mysql = { workspace = true }
 unicode-segmentation = { workspace = true }
+shared = { workspace = true }
+tracing-subscriber = { workspace = true }
+tracing = { workspace = true }
+chrono = { workspace = true }

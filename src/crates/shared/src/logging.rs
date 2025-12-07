@@ -4,7 +4,7 @@ use std::{
 use tracing::*;
 use tracing_subscriber::EnvFilter;
 
-use shared::configuration::{LoggingLevel, CONFIG};
+use crate::configuration::{LoggingLevel, CONFIG};
 use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt};
 
 

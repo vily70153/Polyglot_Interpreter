@@ -1,29 +1,54 @@
 use db::db::DB;
-use std::fmt;
+use tracing::info;
 use std::iter::Peekable;
 use std::str::Chars;
+
+pub mod std_ids {
+    pub const LET: u32 = 53;
+    pub const FUNCTION: u32 = 46;  // function / функція
+    pub const IDENTIFIER: u32 = 70;
+    pub const INT_LITERAL: u32 = 71;
+    pub const FLOAT_LITERAL: u32 = 72;
+    pub const STRING_LITERAL: u32 = 73;
+    
+    pub const ASSIGN: u32 = 33;    // =
+    pub const PLUS: u32 = 13;      // +
+    pub const MINUS: u32 = 14;     // -
+    pub const MULTIPLY: u32 = 15;  // *
+    pub const DIVIDE: u32 = 16;    // /
+    
+    pub const L_PAREN: u32 = 3;    // (
+    pub const R_PAREN: u32 = 4;    // )
+    pub const L_BRACE: u32 = 1;    // {
+    pub const R_BRACE: u32 = 2;    // }
+    pub const COMMA: u32 = 9;      // ,
+
+    pub const CLASS: u32 = 47;     // class / Клас
+    pub const STRUCT: u32 = 48;    // struct / Структура
+    
+    // Розділювачі
+    pub const COLON: u32 = 7;      // :
+    pub const INT_TYPE: u32 = 71;    // int / ціле
+    pub const FLOAT_TYPE: u32 = 72;  // float / дійсне
+    pub const STRING_TYPE: u32 = 73; // string / рядок
+    pub const BOOL_TYPE: u32 = 75;   // bool / булеве
+}
 
 #[derive(Debug, Clone)]
 pub struct Token {
     pub value: String,
     pub token_type: String,
-    pub lang_name: String,
+    pub std_token_id: u32,
     pub lexem: String,
-    pub lexem_type: String,
 }
 
 pub struct Parser {
     db: DB,
 }
 
-impl std::fmt::Display for Token {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{} ({})", self.value, self.token_type)
-    }
-}
-
 impl Parser {
     pub fn new(db: DB) -> Self {
+        info!("Parser initialized.");
         Parser { db }
     }
 
@@ -33,12 +58,9 @@ impl Parser {
 
         while let Some(&c) = chars.peek() {
             match c {
-                c if c.is_whitespace() => {
-                    chars.next();
-                }
+                c if c.is_whitespace() => { chars.next(); }
                 '\'' | '"' => {
-                    let token = self.read_string(&mut chars, c);
-                    tokens.push(token);
+                    tokens.push(self.read_string(&mut chars, c));
                 }
                 c if !is_separator(c) => {
                     let word = self.read_word(&mut chars);
@@ -55,9 +77,8 @@ impl Parser {
 
     fn read_string(&self, chars: &mut Peekable<Chars>, quote_type: char) -> Token {
         let mut value = String::new();
-        chars.next();
+        chars.next(); 
         value.push(quote_type);
-
         let mut content = String::new();
 
         while let Some(&c) = chars.peek() {
@@ -65,33 +86,28 @@ impl Parser {
                 chars.next();
                 value.push_str(&content);
                 value.push(quote_type);
-
                 return Token {
                     value,
-                    token_type: "StringLiteral".to_string(),
-                    lang_name: "Common".to_string(),
+                    token_type: "Literal".to_string(),
+                    std_token_id: std_ids::STRING_LITERAL, // ID 73
                     lexem: content,
-                    lexem_type: "String".to_string(),
                 };
             }
             content.push(chars.next().unwrap());
         }
-
+        
         Token {
-            value: format!("{}{}", quote_type, content),
-            token_type: "UnterminatedString".to_string(),
-            lang_name: "Error".to_string(),
+            value: content.clone(),
+            token_type: "Error".to_string(),
+            std_token_id: 0, 
             lexem: content,
-            lexem_type: "Error".to_string(),
         }
     }
 
     fn read_word(&self, chars: &mut Peekable<Chars>) -> String {
         let mut word = String::new();
         while let Some(&c) = chars.peek() {
-            if is_separator(c) || c.is_whitespace() {
-                break;
-            }
+            if is_separator(c) || c.is_whitespace() { break; }
             word.push(chars.next().unwrap());
         }
         word
@@ -104,30 +120,30 @@ impl Parser {
             Token {
                 value: lexeme_str.to_string(),
                 token_type: std_tbl.lexem_type.clone(),
-                lang_name: all_tbl.lang_name.clone(),
+                std_token_id: all_tbl.std_lexem as u32, // ID 53, 13, 33 etc.
                 lexem: all_tbl.lexem.clone(),
-                lexem_type: std_tbl.lexem_type.clone(),
             }
         } else {
-            let guessed_type = self.guess_type(lexeme_str);
+            let (guessed_type, guessed_id) = self.guess_type_and_id(lexeme_str);
             Token {
                 value: lexeme_str.to_string(),
                 token_type: guessed_type,
-                lang_name: "Unknown".to_string(),
+                std_token_id: guessed_id,
                 lexem: lexeme_str.to_string(),
-                lexem_type: "N/A".to_string(),
             }
         }
     }
 
-    fn guess_type(&self, lexeme: &str) -> String {
+    fn guess_type_and_id(&self, lexeme: &str) -> (String, u32) {
         let first_char = lexeme.chars().next().unwrap_or(' ');
         if first_char.is_numeric() {
-            "Number".to_string()
-        } else if first_char.is_alphabetic() || first_char == '_' {
-            "Identifier".to_string()
+            if lexeme.contains('.') {
+                ("Literal".to_string(), std_ids::FLOAT_LITERAL) // ID 72
+            } else {
+                ("Literal".to_string(), std_ids::INT_LITERAL)   // ID 71
+            }
         } else {
-            "Symbol".to_string()
+            ("Identifier".to_string(), std_ids::IDENTIFIER)     // ID 70
         }
     }
 }

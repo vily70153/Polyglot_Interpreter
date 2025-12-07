@@ -1,7 +1,6 @@
-mod logging;
-
 use db::db::DB;
 use lexer::{tokenizer, ast::AstParser};
+use shared::logging;
 use dotenvy::dotenv;
 use tracing::info;
 use std::env;
@@ -23,7 +22,12 @@ async fn main() {
     let _db = DB::new(&db_url);
 
     let mut lexer = tokenizer::Parser::new(_db);
-    let input_code = "змінна myVariable = 10 + 50"; 
+    let input_code = "
+        структура Test { 
+                user_id: ціле
+        }
+        функція Func ( Test Дані ) {змінна myVariable = Дані}
+    ";
     
     let statements = AstParser::new(lexer.parse(input_code)).parse();
 

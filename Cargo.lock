@@ -266,6 +266,8 @@ version = "0.1.0"
 dependencies = [
  "diesel",
  "mysql",
+ "shared",
+ "tracing",
  "types",
 ]
 
@@ -644,9 +646,13 @@ checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
 name = "lexer"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "db",
  "mysql",
  "regex",
+ "shared",
+ "tracing",
+ "tracing-subscriber",
  "unicode-segmentation",
 ]
 
@@ -1169,9 +1175,12 @@ dependencies = [
 name = "shared"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "homedir",
  "lazy_static",
  "serde",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]

@@ -1,55 +1,137 @@
-name: ci
+name: CI/CD
 
-on: [pull_request]
+# Триггеры:
+# 1. Pull Request (чтобы проверять код перед слиянием)
+# 2. Push в main (чтобы убедиться, что мастер-ветка стабильна)
+# 3. Создание тега v* (напр. v1.0.0) -> это запустит релиз
+on:
+  push:
+    branches: [ "main" ]
+    tags: [ "v*" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+  # Название вашего бинарника (как в Cargo.toml -> [package] name)
+  # ЗАМЕНИТЕ 'usqlrepl' НА ВАШЕ НАЗВАНИЕ
+  BIN_NAME: usqlrepl 
 
 jobs:
-  clippy:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest]
+  # --- CI ЧАСТЬ (Проверки) ---
 
-    name: cargo clippy on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - if: matrix.os == 'ubuntu-latest'
-        run: sudo apt install libdbus-1-dev
-
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
-
-      - run: cargo clippy --locked
-
-  test:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-
-    name: cargo test on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - if: matrix.os == 'ubuntu-latest'
-        run: sudo apt install libdbus-1-dev
-
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
-
-      - run: cargo test --all-targets --workspace
-
+  # 1. Проверка форматирования (самая быстрая)
   fmt:
-    name: cargo rustfmt
+    name: Rustfmt
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           components: rustfmt
+      - run: cargo fmt --all -- --check
 
-      - uses: actions-rust-lang/rustfmt@v1
+  # 2. Проверка безопасности зависимостей
+  audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/audit@v1
+
+  # 3. Линтер (Clippy)
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    needs: fmt # Не запускать, если код криво отформатирован
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get install -y libdbus-1-dev
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: clippy
+      - run: cargo clippy --all-targets --all-features -- -D warnings
+
+  # 4. Тесты (Матрица ОС)
+  test:
+    name: Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    needs: clippy
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install dependencies (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get install -y libdbus-1-dev
+
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+
+      # Если вы используете SQLite файл, убедитесь, что он создается или есть в репо
+      # Если JSON + include_str!, то ничего делать не надо
+      - name: Run tests
+        run: cargo test --verbose
+
+  # --- CD ЧАСТЬ (Релиз) ---
+  
+  # Запускается ТОЛЬКО если мы запушили тег (git tag v1.0.0)
+  release:
+    name: Release (${{ matrix.os }})
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: test # Только если тесты прошли
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        # Собираем под Linux, Windows и MacOS
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            use_cross: false
+            ext: ""
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            use_cross: false
+            ext: ".exe"
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            use_cross: false
+            ext: ""
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get install -y libdbus-1-dev
+
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          target: ${{ matrix.target }}
+
+      # Сборка релизной версии (оптимизированной)
+      - name: Build Release
+        run: cargo build --release --target ${{ matrix.target }}
+
+      # Упаковка в архив (ZIP для Windows, tar.gz для Unix)
+      - name: Package (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          powershell Compress-Archive -Path target/${{ matrix.target }}/release/${{ env.BIN_NAME }}.exe -DestinationPath ${{ env.BIN_NAME }}-${{ matrix.target }}.zip
+
+      - name: Package (Unix)
+        if: matrix.os != 'windows-latest'
+        run: |
+          cd target/${{ matrix.target }}/release
+          tar -czf ../../../${{ env.BIN_NAME }}-${{ matrix.target }}.tar.gz ${{ env.BIN_NAME }}
+          cd ../../..
+
+      # Загрузка архивов в GitHub Releases
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ${{ env.BIN_NAME }}-${{ matrix.target }}.zip
+            ${{ env.BIN_NAME }}-${{ matrix.target }}.tar.gz

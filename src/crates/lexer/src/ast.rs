@@ -11,7 +11,7 @@ pub enum DataType {
     Custom(String),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Expr {
     Number(f64),
     StringLiteral(String),
@@ -20,7 +20,7 @@ pub enum Expr {
     Call { func_name: String, args: Vec<Expr> },
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Stmt {
     VariableDeclaration { name: String, value: Expr },
     FunctionDeclaration { 
@@ -184,7 +184,26 @@ impl AstParser {
             if self.match_id(std_ids::L_PAREN) { return self.finish_call(token.value); }
             return Expr::Identifier(token.value);
         }
-        panic!("Unexpected token: {}", token.value);
+        let is_identifier_like = 
+        token.std_token_id == std_ids::IDENTIFIER || // ID 70
+        token.std_token_id == std_ids::PRINT ||      // ID 300
+        token.std_token_id == std_ids::INPUT ||      // ID 301
+        token.std_token_id == std_ids::LEN;          // ID 302
+
+    if is_identifier_like {
+        self.advance();
+        // Якщо після слова йде '(', значить це виклик функції
+        if self.match_id(std_ids::L_PAREN) {
+            return self.finish_call(token.value);
+        }
+        return Expr::Identifier(token.value);
+    }
+
+    // ... (паніка) ...
+    let err = format!("Unexpected token: {}", token.value);
+    error!("{}", err);
+    panic!("{}", err);
+
     }
     fn finish_call(&mut self, name: String) -> Expr {
         let mut args = Vec::new();

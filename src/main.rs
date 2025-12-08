@@ -1,10 +1,11 @@
 use db::db::DB;
-use lexer::{tokenizer, ast::AstParser};
+use lexer::{tokenizer, ast::{AstParser, Stmt, Expr}};
 use shared::logging;
 use dotenvy::dotenv;
 use tracing::info;
 use std::env;
 use tokio;
+use interpreter::interpreter::Interpreter;
 
 
 
@@ -25,15 +26,21 @@ async fn main() {
 
     let mut lexer = tokenizer::Parser::new(_db);
     let input_code = "
-        структура Test { 
-                user_id: ціле
+        структура Test { user_id: ціле }
+        функція Func ( Test Дані ) {
+             змінна myVariable = Дані
+             друк(myVariable)  // <-- Вызов нашей новой нативной функции
         }
-        функція Func ( Test Дані ) {змінна myVariable = Дані}
     ";
     
-    let statements = AstParser::new(lexer.parse(input_code)).parse();
+    let mut statements = AstParser::new(lexer.parse(input_code)).parse();
 
-    for stmt in statements {
-        println!("{:#?}", stmt);
-    }
+    let mut interp = Interpreter::new();
+    
+    statements.push(Stmt::Expression(Expr::Call {
+        func_name: "Func".to_string(),
+        args: vec![Expr::Number(999.0)], 
+    }));
+
+    interp.interpret(statements);
 }

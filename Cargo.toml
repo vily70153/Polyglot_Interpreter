@@ -7,6 +7,7 @@ edition = "2024"
 [workspace]
 members = [
   "src/crates/db",
+  "src/crates/interpreter",
   "src/crates/lexer",
   "src/crates/shared",
   "src/crates/tests",
@@ -25,6 +26,7 @@ types = { path = "src/crates/types" }
 db = { path = "src/crates/db" }
 shared = { path = "src/crates/shared" }
 tests = { path = "src/crates/tests" }
+interpreter = { path = "src/crates/interpreter" }
 
 mysql = "26.0.1"
 diesel = { version = "2.1.0", features = ["mysql", "r2d2"] }
@@ -60,3 +62,4 @@ ctrlc = { workspace = true }
 unicode-segmentation = { workspace = true }
 tokio = { workspace = true }
 tests = { workspace = true }
+interpreter = { workspace = true }

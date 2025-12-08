@@ -611,6 +611,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "interpreter"
+version = "0.1.0"
+dependencies = [
+ "lexer",
+ "tracing",
+]
+
+[[package]]
 name = "io-enum"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1490,6 +1498,7 @@ dependencies = [
  "db",
  "diesel",
  "dotenvy",
+ "interpreter",
  "lexer",
  "regex",
  "shared",

@@ -1,0 +1,11 @@
+[package]
+name = "interpreter"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+path = "./src/lib.rs"
+
+[dependencies]
+tracing ={ workspace = true }
+lexer ={ workspace = true }

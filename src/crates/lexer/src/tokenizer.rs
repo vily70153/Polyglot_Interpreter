@@ -32,7 +32,14 @@ pub mod std_ids {
     pub const FLOAT_TYPE: u32 = 72;  // float / дійсне
     pub const STRING_TYPE: u32 = 73; // string / рядок
     pub const BOOL_TYPE: u32 = 75;   // bool / булеве
+    // src/crates/lexer/src/tokenizer.rs
+    
+    // --- NATIVE FUNCTIONS (300+) ---
+    pub const PRINT: u32 = 300;
+    pub const INPUT: u32 = 301;
+    pub const LEN: u32 = 302;
 }
+
 
 #[derive(Debug, Clone)]
 pub struct Token {
@@ -59,6 +66,28 @@ impl Parser {
         while let Some(&c) = chars.peek() {
             match c {
                 c if c.is_whitespace() => { chars.next(); }
+                
+                // --- ДОДАЙ ЦЕЙ БЛОК ДЛЯ КОМЕНТАРІВ ---
+                '/' => {
+                    chars.next(); // Пропускаємо перший '/'
+                    if let Some(&next) = chars.peek() {
+                        if next == '/' {
+                            // Це коментар! Пропускаємо все до кінця рядка
+                            while let Some(&comment_char) = chars.peek() {
+                                if comment_char == '\n' {
+                                    break;
+                                }
+                                chars.next();
+                            }
+                            continue; // Йдемо на нову ітерацію while
+                        }
+                    }
+                    // Якщо це не коментар, значить це оператор ділення "/"
+                    // Повертаємо токен "/" (ID 16)
+                    tokens.push(self.create_token_from_word("/"));
+                }
+                // --------------------------------------
+
                 '\'' | '"' => {
                     tokens.push(self.read_string(&mut chars, c));
                 }
@@ -149,5 +178,5 @@ impl Parser {
 }
 
 fn is_separator(c: char) -> bool {
-    matches!(c, '(' | ')' | '{' | '}' | '[' | ']' | ',' | ';' | ':' | '+' | '-' | '*' | '/' | '=' | '\'' | '"')
+    matches!(c, '(' | ')' | '{' | '}' | '[' | ']' | ',' | ';' | ':' | '+' | '-' | '*' | '=' | '\'' | '"')
 }

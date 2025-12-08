@@ -18,7 +18,13 @@ async fn main() {
         std::process::exit(0);
     }).expect("Error setting Ctrl-C handler");
 
-    logging::init_logging();
+    let args: Vec<String> = env::args().collect();
+
+    let enable_logging = args.get(1).map(|v| v != "--no-logging").unwrap_or(true);
+    if enable_logging {
+        logging::init_logging();
+    }
+
     info!("Application started.");
 
     let db_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");

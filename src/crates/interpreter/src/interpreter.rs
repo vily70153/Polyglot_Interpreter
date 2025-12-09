@@ -4,6 +4,7 @@ use std::cell::RefCell;
 use lexer::ast::{Stmt, Expr, DataType};
 use tracing::{info, error, debug};
 use std::io::{self, Write};
+use lexer::tokenizer::std_ids;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum RuntimeValue {
@@ -37,17 +38,14 @@ impl Environment {
         }
     }
 
-    // Объявить новую переменную
     pub fn define(&mut self, name: String, value: RuntimeValue) {
         self.values.insert(name, value);
     }
 
-    // Получить значение переменной (ищет в текущей области, затем в родительской)
     pub fn get(&self, name: &str) -> Option<RuntimeValue> {
         if let Some(val) = self.values.get(name) {
             return Some(val.clone());
         }
-        // Если нет у нас, ищем у родителя
         if let Some(parent) = &self.parent {
             return parent.borrow().get(name);
         }
@@ -55,17 +53,13 @@ impl Environment {
     }
 }
 
-// --- Interpreter ---
 pub struct Interpreter {
-    // Global scope или текущий scope
     pub env: Rc<RefCell<Environment>>,
-    // Хранилище определений структур (просто шаблоны)
     pub struct_definitions: HashMap<String, Vec<(String, DataType)>>,
 }
 
 impl Interpreter {
     pub fn new() -> Self {
-        // Создаем глобальное окружение
         let global_env = Rc::new(RefCell::new(Environment::new(None)));
         Interpreter {
             env: global_env,
@@ -73,7 +67,6 @@ impl Interpreter {
         }
     }
 
-    // Главная точка входа
     pub fn interpret(&mut self, statements: Vec<Stmt>) {
         info!("--- Interpreter Started ---");
         for stmt in statements {
@@ -82,7 +75,6 @@ impl Interpreter {
         info!("--- Interpreter Finished ---");
     }
 
-    // Выполнение инструкций (Statements)
     fn execute(&mut self, stmt: Stmt) -> RuntimeValue {
         match stmt {
             Stmt::VariableDeclaration { name, value } => {
@@ -103,7 +95,7 @@ impl Interpreter {
             },
             Stmt::StructDeclaration { name, fields } => {
                 debug!("Struct Decl: {}", name);
-                // Сохраняем определение структуры отдельно
+                // Зберігаємо визначення структури окремо
                 self.struct_definitions.insert(name, fields);
                 RuntimeValue::Void
             },
@@ -113,7 +105,6 @@ impl Interpreter {
         }
     }
 
-    // Вычисление выражений (Expressions)
     fn evaluate(&mut self, expr: Expr) -> RuntimeValue {
         match expr {
             Expr::Number(n) => RuntimeValue::Number(n),
@@ -133,117 +124,137 @@ impl Interpreter {
                 let r = self.evaluate(*right);
                 self.apply_binary_op(l, op, r)
             },
-            Expr::Call { func_name, args } => {
-                self.call_function(func_name, args)
+            Expr::Call { func_id, func_name, args } => {
+                self.call_function(func_id, func_name, args)
+            },
+            Expr::MemberAccess { object, member } => {
+                let obj_val = self.evaluate(*object);
+                if let RuntimeValue::StructInstance { fields, .. } = obj_val {
+                    if let Some(val) = fields.get(&member) {
+                        return val.clone();
+                    } else {
+                        error!("Field '{}' not found in struct instance", member);
+                        return RuntimeValue::Null;
+                    }
+                } else {
+                    error!("Cannot access member '{}' of non-struct", member);
+                    return RuntimeValue::Null;
+                }
             },
         }
     }
-        
-        fn call_function(&mut self, func_name: String, args: Vec<Expr>) -> RuntimeValue {
-            
-            // --- NATIVE FUNCTIONS HANDLER ---
-            // Проверяем имя функции (поддерживаем и EN, и UA версии, 
-            // так как парсер передает имя как строку)
-            match func_name.as_str() {
-                "print" | "друк" => {
-                    let mut output = Vec::new();
-                    for arg in args {
-                        let val = self.evaluate(arg);
-                        match val {
-                            RuntimeValue::Number(n) => output.push(n.to_string()),
-                            RuntimeValue::String(s) => output.push(s),
-                            RuntimeValue::Bool(b) => output.push(b.to_string()),
-                            RuntimeValue::Null => output.push("null".to_string()),
-                            RuntimeValue::Void => output.push("void".to_string()),
-                            RuntimeValue::StructInstance { type_name, .. } => {
-                                output.push(format!("[Instance of {}]", type_name))
-                            }
-                            RuntimeValue::Function { name, .. } => {
-                                output.push(format!("[Function {}]", name))
-                            }
+
+    fn call_function(&mut self, func_id: u32, func_name: String, args: Vec<Expr>) -> RuntimeValue {
+        // 1. NATIVE FUNCTIONS (Перевірка по ID)
+        match func_id {
+            std_ids::PRINT => { // 300
+                let mut output = Vec::new();
+                for arg in args {
+                    let val = self.evaluate(arg);
+                    match val {
+                        RuntimeValue::Number(n) => output.push(n.to_string()),
+                        RuntimeValue::String(s) => output.push(s),
+                        RuntimeValue::Bool(b) => output.push(b.to_string()),
+                        RuntimeValue::Null => output.push("null".to_string()),
+                        RuntimeValue::Void => output.push("void".to_string()),
+                        RuntimeValue::StructInstance { type_name, .. } => {
+                            output.push(format!("[Instance of {}]", type_name))
+                        }
+                        RuntimeValue::Function { name, .. } => {
+                            output.push(format!("[Function {}]", name))
                         }
                     }
-                    println!("{}", output.join(" "));
-                    return RuntimeValue::Void;
-                },
-                
-                "input" | "ввід" => {
-                    // Если передали аргумент, выводим его как подсказку (prompt)
-                    if let Some(arg) = args.first() {
-                         let prompt = self.evaluate(arg.clone());
-                         if let RuntimeValue::String(s) = prompt {
-                             print!("{}", s);
-                             // Сбрасываем буфер, чтобы текст появился до ввода
-                             io::stdout().flush().unwrap(); 
-                         }
-                    }
-    
-                    let mut buffer = String::new();
-                    io::stdin().read_line(&mut buffer).expect("Failed to read input");
-                    // Обрезаем символ новой строки (\n) в конце
-                    return RuntimeValue::String(buffer.trim().to_string());
-                },
-    
-                "len" | "довжина" => {
-                    if args.len() != 1 {
-                        error!("Function 'len' expects 1 argument");
-                        return RuntimeValue::Null;
-                    }
-                    let val = self.evaluate(args[0].clone());
-                    if let RuntimeValue::String(s) = val {
-                        return RuntimeValue::Number(s.len() as f64);
-                    } else {
-                        error!("Function 'len' expects a String");
-                        return RuntimeValue::Number(0.0);
-                    }
-                },
-                
-                // Если это не нативная функция, идем дальше к пользовательским
-                _ => {} 
-            }
-    
-            // --- USER DEFINED FUNCTIONS ---
-            let func_val = {
-                let env = self.env.borrow();
-                env.get(&func_name)
-            };
-            
-            // ... (ваш старый код вызова пользовательских функций) ...
-            match func_val {
-                Some(RuntimeValue::Function { params, body, .. }) => {
-                    // Ваша логика создания Scope и выполнения body
-                    // ... (код который я давал в прошлом ответе)
-                    
-                    // КОПИЯ ЛОГИКИ ДЛЯ КОНТЕКСТА:
-                    if args.len() != params.len() {
-                        error!("Arg count mismatch for '{}'", func_name);
-                        return RuntimeValue::Null;
-                    }
-                    let mut evaluated_args = Vec::new();
-                    for arg in args { evaluated_args.push(self.evaluate(arg)); }
-                    
-                    let func_env = Rc::new(RefCell::new(crate::interpreter::Environment::new(Some(self.env.clone()))));
-                    for (i, (param_name, _)) in params.iter().enumerate() {
-                        func_env.borrow_mut().define(param_name.clone(), evaluated_args[i].clone());
-                    }
-                    
-                    let previous_env = self.env.clone();
-                    self.env = func_env;
-                    
-                    let mut result = RuntimeValue::Void;
-                    for stmt in body {
-                        result = self.execute(stmt);
-                    }
-                    
-                    self.env = previous_env;
-                    result
-                },
-                _ => {
-                    error!("Undefined function '{}'", func_name);
-                    RuntimeValue::Null
                 }
+                println!("{}", output.join(" "));
+                return RuntimeValue::Void;
+            },
+            std_ids::INPUT => { // 301
+                if let Some(arg) = args.first() {
+                    let prompt = self.evaluate(arg.clone());
+                    if let RuntimeValue::String(s) = prompt {
+                        print!("{}", s);
+                        io::stdout().flush().unwrap();
+                    }
+                }
+                let mut buffer = String::new();
+                io::stdin().read_line(&mut buffer).expect("Failed to read input");
+                return RuntimeValue::String(buffer.trim().to_string());
+            },
+            std_ids::LEN => { // 302
+                if args.len() != 1 {
+                    error!("Function 'len' expects 1 argument");
+                    return RuntimeValue::Null;
+                }
+                let val = self.evaluate(args[0].clone());
+                if let RuntimeValue::String(s) = val {
+                    return RuntimeValue::Number(s.len() as f64);
+                } else {
+                    error!("Function 'len' expects a String");
+                    return RuntimeValue::Number(0.0);
+                }
+            },
+            _ => {} // Якщо ID не нативний, йдемо далі
+        }
+
+        // 2. CONSTRUCTORS
+        // Конструктори структур
+        if let Some(fields_def) = self.struct_definitions.get(&func_name).cloned() {
+            if args.len() != fields_def.len() {
+                error!("Constructor '{}' expects {} arguments, got {}", func_name, fields_def.len(), args.len());
+                return RuntimeValue::Null;
+            }
+            
+            let mut instance_fields = HashMap::new();
+            for (i, (field_name, _)) in fields_def.iter().enumerate() {
+                let val = self.evaluate(args[i].clone());
+                instance_fields.insert(field_name.clone(), val);
+            }
+            return RuntimeValue::StructInstance {
+                type_name: func_name,
+                fields: instance_fields,
+            };
+        }
+
+        // 3. USER FUNCTIONS
+        let func_val = {
+            let env = self.env.borrow();
+            env.get(&func_name)
+        };
+
+        match func_val {
+            Some(RuntimeValue::Function { params, body, .. }) => {
+                if args.len() != params.len() {
+                    error!("Arg count mismatch for '{}'. Expected {}, got {}", func_name, params.len(), args.len());
+                    return RuntimeValue::Null;
+                }
+
+                let mut evaluated_args = Vec::new();
+                for arg in args {
+                    evaluated_args.push(self.evaluate(arg));
+                }
+
+                let func_env = Rc::new(RefCell::new(Environment::new(Some(self.env.clone()))));
+
+                for (i, (param_name, _)) in params.iter().enumerate() {
+                    func_env.borrow_mut().define(param_name.clone(), evaluated_args[i].clone());
+                }
+
+                let previous_env = self.env.clone(); // Зберігаємо старий
+                self.env = func_env;                 // Включаємо новий
+
+                for stmt in body {
+                    self.execute(stmt.clone());
+                }
+
+                self.env = previous_env; // Повертаємо старий контекст
+                return RuntimeValue::Void;
+            },
+            _ => {
+                error!("Undefined function '{}' (ID: {})", func_name, func_id);
+                return RuntimeValue::Null;
             }
         }
+    }
 
     fn apply_binary_op(&self, left: RuntimeValue, op: String, right: RuntimeValue) -> RuntimeValue {
         match (left, right) {
@@ -254,9 +265,12 @@ impl Interpreter {
                 "/" => RuntimeValue::Number(a / b),
                 _ => RuntimeValue::Null,
             },
-            // Можно добавить конкатенацию строк
             (RuntimeValue::String(a), RuntimeValue::String(b)) => {
-                if op == "+" { RuntimeValue::String(format!("{}{}", a, b)) } else { RuntimeValue::Null }
+                if op == "+" { 
+                    RuntimeValue::String(format!("{}{}", a, b)) 
+                } else { 
+                    RuntimeValue::Null 
+                }
             },
             _ => {
                 error!("Invalid operands for operator {}", op);

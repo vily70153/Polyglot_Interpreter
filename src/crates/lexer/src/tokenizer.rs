@@ -38,6 +38,7 @@ pub mod std_ids {
     pub const PRINT: u32 = 300;
     pub const INPUT: u32 = 301;
     pub const LEN: u32 = 302;
+    pub const DOT: u32 = 10;
 }
 
 
@@ -178,5 +179,5 @@ impl Parser {
 }
 
 fn is_separator(c: char) -> bool {
-    matches!(c, '(' | ')' | '{' | '}' | '[' | ']' | ',' | ';' | ':' | '+' | '-' | '*' | '=' | '\'' | '"')
+    matches!(c, '.' | '(' | ')' | '{' | '}' | '[' | ']' | ',' | ';' | ':' | '+' | '-' | '*' | '=' | '\'' | '"')
 }

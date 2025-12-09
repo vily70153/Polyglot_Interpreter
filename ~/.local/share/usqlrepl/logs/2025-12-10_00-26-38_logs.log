@@ -1,0 +1,41 @@
+2025-12-09T22:26:38.519450Z  INFO usqlrepl: Application started.
+2025-12-09T22:26:38.519499Z  INFO usqlrepl: Selected language: UA
+2025-12-09T22:26:38.523410Z  INFO db::db: DB was created.
+2025-12-09T22:26:38.523452Z  INFO lexer::tokenizer: Parser initialized.
+2025-12-09T22:26:38.524045Z  INFO db::db: Lexem loaded successfully: структура
+2025-12-09T22:26:38.524341Z  INFO db::db: Lexem loaded successfully: Test
+2025-12-09T22:26:38.524732Z  INFO db::db: Lexem loaded successfully: {
+2025-12-09T22:26:38.525012Z  INFO db::db: Lexem loaded successfully: user_id
+2025-12-09T22:26:38.525189Z  INFO db::db: Lexem loaded successfully: :
+2025-12-09T22:26:38.525357Z  INFO db::db: Lexem loaded successfully: ціле
+2025-12-09T22:26:38.525524Z  INFO db::db: Lexem loaded successfully: }
+2025-12-09T22:26:38.525680Z  INFO db::db: Lexem loaded successfully: функція
+2025-12-09T22:26:38.525829Z  INFO db::db: Lexem loaded successfully: Func
+2025-12-09T22:26:38.525989Z  INFO db::db: Lexem loaded successfully: (
+2025-12-09T22:26:38.526138Z  INFO db::db: Lexem loaded successfully: Test
+2025-12-09T22:26:38.526286Z  INFO db::db: Lexem loaded successfully: Дані
+2025-12-09T22:26:38.526444Z  INFO db::db: Lexem loaded successfully: )
+2025-12-09T22:26:38.526601Z  INFO db::db: Lexem loaded successfully: {
+2025-12-09T22:26:38.526755Z  INFO db::db: Lexem loaded successfully: змінна
+2025-12-09T22:26:38.526912Z  INFO db::db: Lexem loaded successfully: myVariable
+2025-12-09T22:26:38.527068Z  INFO db::db: Lexem loaded successfully: =
+2025-12-09T22:26:38.527217Z  INFO db::db: Lexem loaded successfully: Дані
+2025-12-09T22:26:38.527377Z  INFO db::db: Lexem loaded successfully: .
+2025-12-09T22:26:38.527529Z  INFO db::db: Lexem loaded successfully: user_id
+2025-12-09T22:26:38.527685Z  INFO db::db: Lexem loaded successfully: друк
+2025-12-09T22:26:38.527840Z  INFO db::db: Lexem loaded successfully: (
+2025-12-09T22:26:38.527989Z  INFO db::db: Lexem loaded successfully: myVariable
+2025-12-09T22:26:38.528143Z  INFO db::db: Lexem loaded successfully: )
+2025-12-09T22:26:38.528296Z  INFO db::db: Lexem loaded successfully: }
+2025-12-09T22:26:38.528447Z  INFO db::db: Lexem loaded successfully: Func
+2025-12-09T22:26:38.528604Z  INFO db::db: Lexem loaded successfully: (
+2025-12-09T22:26:38.528752Z  INFO db::db: Lexem loaded successfully: Test
+2025-12-09T22:26:38.528906Z  INFO db::db: Lexem loaded successfully: (
+2025-12-09T22:26:38.529053Z  INFO db::db: Lexem loaded successfully: 1
+2025-12-09T22:26:38.529206Z  INFO db::db: Lexem loaded successfully: )
+2025-12-09T22:26:38.529367Z  INFO db::db: Lexem loaded successfully: )
+2025-12-09T22:26:38.529380Z  INFO lexer::ast: AstParser initialized.
+2025-12-09T22:26:38.529403Z  INFO interpreter::interpreter: --- Interpreter Started ---
+2025-12-09T22:26:38.529425Z ERROR interpreter::interpreter: Undefined function 'Test'
+2025-12-09T22:26:38.529436Z ERROR interpreter::interpreter: Cannot access member 'user_id' of non-struct
+2025-12-09T22:26:38.529450Z  INFO interpreter::interpreter: --- Interpreter Finished ---

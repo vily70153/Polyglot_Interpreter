@@ -50,3 +50,4 @@ fn make_writer() -> File {
   File::create_new(filename)
       .expect("The application should be able to create a log file in specified folder.")
 }
+

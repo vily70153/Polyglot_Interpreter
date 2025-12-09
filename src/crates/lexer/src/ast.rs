@@ -17,7 +17,15 @@ pub enum Expr {
     StringLiteral(String),
     Identifier(String),
     BinaryOp { left: Box<Expr>, op: String, right: Box<Expr> },
-    Call { func_name: String, args: Vec<Expr> },
+    Call {
+        func_id: u32,
+        func_name: String,
+        args: Vec<Expr>,
+    },
+    MemberAccess {
+        object: Box<Expr>,
+        member: String,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -165,12 +173,16 @@ impl AstParser {
         expr
     }
     fn primary(&mut self) -> Expr {
+        // 1. Дужки ( ... )
         if self.match_id(std_ids::L_PAREN) {
             let expr = self.expression();
             self.consume_id(std_ids::R_PAREN, "Expect ')'");
             return expr;
         }
+
         let token = self.peek().clone();
+
+        // 2. Літерали (числа, рядки)
         if token.std_token_id == std_ids::INT_LITERAL || token.std_token_id == std_ids::FLOAT_LITERAL {
             self.advance();
             return Expr::Number(token.value.parse().unwrap_or(0.0));
@@ -179,43 +191,58 @@ impl AstParser {
             self.advance();
             return Expr::StringLiteral(token.lexem);
         }
-        if token.std_token_id == std_ids::IDENTIFIER {
-            self.advance();
-            if self.match_id(std_ids::L_PAREN) { return self.finish_call(token.value); }
-            return Expr::Identifier(token.value);
-        }
+
+        // 3. Ідентифікатори та Функції
         let is_identifier_like = 
-        token.std_token_id == std_ids::IDENTIFIER || // ID 70
-        token.std_token_id == std_ids::PRINT ||      // ID 300
-        token.std_token_id == std_ids::INPUT ||      // ID 301
-        token.std_token_id == std_ids::LEN;          // ID 302
+            token.std_token_id == std_ids::IDENTIFIER || 
+            token.std_token_id == std_ids::PRINT ||      
+            token.std_token_id == std_ids::INPUT ||      
+            token.std_token_id == std_ids::LEN;
 
-    if is_identifier_like {
-        self.advance();
-        // Якщо після слова йде '(', значить це виклик функції
-        if self.match_id(std_ids::L_PAREN) {
-            return self.finish_call(token.value);
+        if is_identifier_like {
+            self.advance(); // Беремо назву (наприклад "Дані")
+
+            // А. Перевірка на виклик функції: Name(...)
+            if self.match_id(std_ids::L_PAREN) {
+                return self.finish_call(token.std_token_id, token.value);
+            }
+
+            // Б. Створюємо початковий вираз (змінна)
+            let mut expr = Expr::Identifier(token.value);
+
+            // В. Перевірка на доступ до поля: .user_id
+            while self.match_id(std_ids::DOT) { // ID 10
+                let member_name = self.consume_id(std_ids::IDENTIFIER, "Expect field name").value.clone();
+                
+                // ВАЖЛИВО: Ми огортаємо старий expr у новий MemberAccess
+                expr = Expr::MemberAccess { 
+                    object: Box::new(expr), // <-- Ось тут був корінь зла
+                    member: member_name 
+                };
+            }
+
+            return expr;
         }
-        return Expr::Identifier(token.value);
+
+        let err = format!("Unexpected token: {} (ID: {})", token.value, token.std_token_id);
+        error!("{}", err);
+        panic!("{}", err);
     }
 
-    // ... (паніка) ...
-    let err = format!("Unexpected token: {}", token.value);
-    error!("{}", err);
-    panic!("{}", err);
-
-    }
-    fn finish_call(&mut self, name: String) -> Expr {
+fn finish_call(&mut self, func_id: u32, name: String) -> Expr {
         let mut args = Vec::new();
         if !self.check_id(std_ids::R_PAREN) {
             loop {
                 args.push(self.expression());
-                if !self.match_id(std_ids::COMMA) { break; }
+                if !self.match_id(std_ids::COMMA) {
+                    break;
+                }
             }
         }
-        self.consume_id(std_ids::R_PAREN, "Expect ')'");
-        Expr::Call { func_name: name, args }
+        self.consume_id(std_ids::R_PAREN, "Expect ')' after args");
+        Expr::Call { func_id, func_name: name, args }
     }
+    
     fn match_id(&mut self, id: u32) -> bool { if self.check_id(id) { self.advance(); true } else { false } }
     fn match_ids(&mut self, ids: &[u32]) -> bool { for &id in ids { if self.check_id(id) { self.advance(); return true; } } false }
     fn check_id(&self, id: u32) -> bool { !self.is_at_end() && self.peek().std_token_id == id }

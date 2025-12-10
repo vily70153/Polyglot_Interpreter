@@ -1,0 +1,60 @@
+2025-12-10T14:24:30.032672Z  INFO usqlrepl: Application started.
+2025-12-10T14:24:30.032815Z  INFO usqlrepl: Selected language: UA
+2025-12-10T14:24:30.032822Z  INFO usqlrepl: Config path: .config/usqlrepl/config.toml
+2025-12-10T14:24:30.039059Z  INFO db::db: DB was created.
+2025-12-10T14:24:30.039117Z  INFO lexer::tokenizer: Parser initialized.
+2025-12-10T14:24:30.039128Z  INFO usqlrepl: Reading source code from file: ./fac.v
+2025-12-10T14:24:30.040342Z  INFO db::db: Lexem loaded successfully: функція
+2025-12-10T14:24:30.041027Z  INFO db::db: Lexem loaded successfully: Factorial
+2025-12-10T14:24:30.041703Z  INFO db::db: Lexem loaded successfully: (
+2025-12-10T14:24:30.042294Z  INFO db::db: Lexem loaded successfully: ціле
+2025-12-10T14:24:30.042707Z  INFO db::db: Lexem loaded successfully: n
+2025-12-10T14:24:30.043112Z  INFO db::db: Lexem loaded successfully: )
+2025-12-10T14:24:30.043543Z  INFO db::db: Lexem loaded successfully: {
+2025-12-10T14:24:30.043936Z  INFO db::db: Lexem loaded successfully: якщо
+2025-12-10T14:24:30.044390Z  INFO db::db: Lexem loaded successfully: (
+2025-12-10T14:24:30.045095Z  INFO db::db: Lexem loaded successfully: n
+2025-12-10T14:24:30.045774Z  INFO db::db: Lexem loaded successfully: <
+2025-12-10T14:24:30.046557Z  INFO db::db: Lexem loaded successfully: 2
+2025-12-10T14:24:30.047039Z  INFO db::db: Lexem loaded successfully: )
+2025-12-10T14:24:30.047448Z  INFO db::db: Lexem loaded successfully: {
+2025-12-10T14:24:30.047825Z  INFO db::db: Lexem loaded successfully: повернути
+2025-12-10T14:24:30.048210Z  INFO db::db: Lexem loaded successfully: 1
+2025-12-10T14:24:30.048571Z  INFO db::db: Lexem loaded successfully: }
+2025-12-10T14:24:30.048949Z  INFO db::db: Lexem loaded successfully: інакше
+2025-12-10T14:24:30.049294Z  INFO db::db: Lexem loaded successfully: {
+2025-12-10T14:24:30.049638Z  INFO db::db: Lexem loaded successfully: повернути
+2025-12-10T14:24:30.050004Z  INFO db::db: Lexem loaded successfully: n
+2025-12-10T14:24:30.050338Z  INFO db::db: Lexem loaded successfully: *
+2025-12-10T14:24:30.050694Z  INFO db::db: Lexem loaded successfully: Factorial
+2025-12-10T14:24:30.051047Z  INFO db::db: Lexem loaded successfully: (
+2025-12-10T14:24:30.051378Z  INFO db::db: Lexem loaded successfully: n
+2025-12-10T14:24:30.051741Z  INFO db::db: Lexem loaded successfully: -
+2025-12-10T14:24:30.052066Z  INFO db::db: Lexem loaded successfully: 1
+2025-12-10T14:24:30.052388Z  INFO db::db: Lexem loaded successfully: )
+2025-12-10T14:24:30.052693Z  INFO db::db: Lexem loaded successfully: }
+2025-12-10T14:24:30.052991Z  INFO db::db: Lexem loaded successfully: }
+2025-12-10T14:24:30.053262Z  INFO db::db: Lexem loaded successfully: змінна
+2025-12-10T14:24:30.053536Z  INFO db::db: Lexem loaded successfully: result
+2025-12-10T14:24:30.053807Z  INFO db::db: Lexem loaded successfully: =
+2025-12-10T14:24:30.054060Z  INFO db::db: Lexem loaded successfully: Factorial
+2025-12-10T14:24:30.054302Z  INFO db::db: Lexem loaded successfully: (
+2025-12-10T14:24:30.054538Z  INFO db::db: Lexem loaded successfully: 5
+2025-12-10T14:24:30.054782Z  INFO db::db: Lexem loaded successfully: )
+2025-12-10T14:24:30.055014Z  INFO db::db: Lexem loaded successfully: друк
+2025-12-10T14:24:30.055240Z  INFO db::db: Lexem loaded successfully: (
+2025-12-10T14:24:30.055489Z  INFO db::db: Lexem loaded successfully: ,
+2025-12-10T14:24:30.055703Z  INFO db::db: Lexem loaded successfully: result
+2025-12-10T14:24:30.055909Z  INFO db::db: Lexem loaded successfully: )
+2025-12-10T14:24:30.055915Z  INFO lexer::ast: AstParser initialized.
+2025-12-10T14:24:30.055936Z  INFO interpreter::interpreter: --- Interpreter Started ---
+2025-12-10T14:24:30.055955Z ERROR interpreter::interpreter: Runtime Error: Undefined variable 'повернути'
+2025-12-10T14:24:30.055966Z ERROR interpreter::interpreter: Runtime Error: Undefined variable 'повернути'
+2025-12-10T14:24:30.055980Z ERROR interpreter::interpreter: Runtime Error: Undefined variable 'повернути'
+2025-12-10T14:24:30.055989Z ERROR interpreter::interpreter: Runtime Error: Undefined variable 'повернути'
+2025-12-10T14:24:30.056018Z ERROR interpreter::interpreter: Runtime Error: Undefined variable 'повернути'
+2025-12-10T14:24:30.056031Z ERROR interpreter::interpreter: Invalid operands for operator *
+2025-12-10T14:24:30.056038Z ERROR interpreter::interpreter: Invalid operands for operator *
+2025-12-10T14:24:30.056046Z ERROR interpreter::interpreter: Invalid operands for operator *
+2025-12-10T14:24:30.056053Z ERROR interpreter::interpreter: Invalid operands for operator *
+2025-12-10T14:24:30.056067Z  INFO interpreter::interpreter: --- Interpreter Finished ---

@@ -1,0 +1,55 @@
+2025-12-10T14:27:31.329738Z  INFO usqlrepl: Application started.
+2025-12-10T14:27:31.329805Z  INFO usqlrepl: Selected language: UA
+2025-12-10T14:27:31.329814Z  INFO usqlrepl: Config path: .config/usqlrepl/config.toml
+2025-12-10T14:27:31.336904Z  INFO db::db: DB was created.
+2025-12-10T14:27:31.336954Z  INFO lexer::tokenizer: Parser initialized.
+2025-12-10T14:27:31.336964Z  INFO usqlrepl: Reading source code from file: ./fac.v
+2025-12-10T14:27:31.338191Z  INFO db::db: Lexem loaded successfully: функція
+2025-12-10T14:27:31.338936Z  INFO db::db: Lexem loaded successfully: Factorial
+2025-12-10T14:27:31.339392Z  INFO db::db: Lexem loaded successfully: (
+2025-12-10T14:27:31.339825Z  INFO db::db: Lexem loaded successfully: ціле
+2025-12-10T14:27:31.340228Z  INFO db::db: Lexem loaded successfully: n
+2025-12-10T14:27:31.340670Z  INFO db::db: Lexem loaded successfully: )
+2025-12-10T14:27:31.341075Z  INFO db::db: Lexem loaded successfully: {
+2025-12-10T14:27:31.341486Z  INFO db::db: Lexem loaded successfully: якщо
+2025-12-10T14:27:31.341887Z  INFO db::db: Lexem loaded successfully: (
+2025-12-10T14:27:31.342276Z  INFO db::db: Lexem loaded successfully: n
+2025-12-10T14:27:31.342686Z  INFO db::db: Lexem loaded successfully: <
+2025-12-10T14:27:31.343100Z  INFO db::db: Lexem loaded successfully: 2
+2025-12-10T14:27:31.343475Z  INFO db::db: Lexem loaded successfully: )
+2025-12-10T14:27:31.343838Z  INFO db::db: Lexem loaded successfully: {
+2025-12-10T14:27:31.344173Z  INFO db::db: Lexem loaded successfully: повернути
+2025-12-10T14:27:31.344510Z  INFO db::db: Lexem loaded successfully: 1
+2025-12-10T14:27:31.344817Z  INFO db::db: Lexem loaded successfully: }
+2025-12-10T14:27:31.345124Z  INFO db::db: Lexem loaded successfully: інакше
+2025-12-10T14:27:31.345419Z  INFO db::db: Lexem loaded successfully: {
+2025-12-10T14:27:31.345686Z  INFO db::db: Lexem loaded successfully: повернути
+2025-12-10T14:27:31.345944Z  INFO db::db: Lexem loaded successfully: n
+2025-12-10T14:27:31.346198Z  INFO db::db: Lexem loaded successfully: *
+2025-12-10T14:27:31.346478Z  INFO db::db: Lexem loaded successfully: Factorial
+2025-12-10T14:27:31.346723Z  INFO db::db: Lexem loaded successfully: (
+2025-12-10T14:27:31.346944Z  INFO db::db: Lexem loaded successfully: n
+2025-12-10T14:27:31.347159Z  INFO db::db: Lexem loaded successfully: -
+2025-12-10T14:27:31.347364Z  INFO db::db: Lexem loaded successfully: 1
+2025-12-10T14:27:31.347580Z  INFO db::db: Lexem loaded successfully: )
+2025-12-10T14:27:31.347780Z  INFO db::db: Lexem loaded successfully: }
+2025-12-10T14:27:31.347970Z  INFO db::db: Lexem loaded successfully: }
+2025-12-10T14:27:31.348154Z  INFO db::db: Lexem loaded successfully: змінна
+2025-12-10T14:27:31.348335Z  INFO db::db: Lexem loaded successfully: result
+2025-12-10T14:27:31.348532Z  INFO db::db: Lexem loaded successfully: =
+2025-12-10T14:27:31.348708Z  INFO db::db: Lexem loaded successfully: Factorial
+2025-12-10T14:27:31.348878Z  INFO db::db: Lexem loaded successfully: (
+2025-12-10T14:27:31.349036Z  INFO db::db: Lexem loaded successfully: 5
+2025-12-10T14:27:31.349196Z  INFO db::db: Lexem loaded successfully: )
+2025-12-10T14:27:31.349348Z  INFO db::db: Lexem loaded successfully: друк
+2025-12-10T14:27:31.349504Z  INFO db::db: Lexem loaded successfully: (
+2025-12-10T14:27:31.349659Z  INFO db::db: Lexem loaded successfully: ,
+2025-12-10T14:27:31.349805Z  INFO db::db: Lexem loaded successfully: result
+2025-12-10T14:27:31.349946Z  INFO db::db: Lexem loaded successfully: )
+2025-12-10T14:27:31.349950Z  INFO lexer::ast: AstParser initialized.
+2025-12-10T14:27:31.349969Z  INFO interpreter::interpreter: --- Interpreter Started ---
+2025-12-10T14:27:31.349995Z ERROR interpreter::interpreter: Invalid operands for operator *
+2025-12-10T14:27:31.350000Z ERROR interpreter::interpreter: Invalid operands for operator *
+2025-12-10T14:27:31.350004Z ERROR interpreter::interpreter: Invalid operands for operator *
+2025-12-10T14:27:31.350008Z ERROR interpreter::interpreter: Invalid operands for operator *
+2025-12-10T14:27:31.350016Z  INFO interpreter::interpreter: --- Interpreter Finished ---

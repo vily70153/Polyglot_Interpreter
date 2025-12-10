@@ -1,0 +1,6 @@
+2025-12-10T13:06:08.354688Z  INFO usqlrepl: Application started.
+2025-12-10T13:06:08.354779Z  INFO usqlrepl: Selected language: UA
+2025-12-10T13:06:08.354791Z  INFO usqlrepl: Config path: .config/usqlrepl/config.toml
+2025-12-10T13:06:08.357652Z  INFO db::db: DB was created.
+2025-12-10T13:06:08.357726Z  INFO lexer::tokenizer: Parser initialized.
+2025-12-10T13:06:08.357739Z ERROR usqlrepl: No file provided, running default test code.

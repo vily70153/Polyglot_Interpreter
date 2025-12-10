@@ -173,7 +173,6 @@ impl AstParser {
         expr
     }
     fn primary(&mut self) -> Expr {
-        // 1. Дужки ( ... )
         if self.match_id(std_ids::L_PAREN) {
             let expr = self.expression();
             self.consume_id(std_ids::R_PAREN, "Expect ')'");
@@ -182,7 +181,6 @@ impl AstParser {
 
         let token = self.peek().clone();
 
-        // 2. Літерали (числа, рядки)
         if token.std_token_id == std_ids::INT_LITERAL || token.std_token_id == std_ids::FLOAT_LITERAL {
             self.advance();
             return Expr::Number(token.value.parse().unwrap_or(0.0));
@@ -192,7 +190,6 @@ impl AstParser {
             return Expr::StringLiteral(token.lexem);
         }
 
-        // 3. Ідентифікатори та Функції
         let is_identifier_like = 
             token.std_token_id == std_ids::IDENTIFIER || 
             token.std_token_id == std_ids::PRINT ||      
@@ -200,23 +197,19 @@ impl AstParser {
             token.std_token_id == std_ids::LEN;
 
         if is_identifier_like {
-            self.advance(); // Беремо назву (наприклад "Дані")
+            self.advance();
 
-            // А. Перевірка на виклик функції: Name(...)
             if self.match_id(std_ids::L_PAREN) {
                 return self.finish_call(token.std_token_id, token.value);
             }
 
-            // Б. Створюємо початковий вираз (змінна)
             let mut expr = Expr::Identifier(token.value);
 
-            // В. Перевірка на доступ до поля: .user_id
             while self.match_id(std_ids::DOT) { // ID 10
                 let member_name = self.consume_id(std_ids::IDENTIFIER, "Expect field name").value.clone();
                 
-                // ВАЖЛИВО: Ми огортаємо старий expr у новий MemberAccess
                 expr = Expr::MemberAccess { 
-                    object: Box::new(expr), // <-- Ось тут був корінь зла
+                    object: Box::new(expr),
                     member: member_name 
                 };
             }
@@ -229,7 +222,7 @@ impl AstParser {
         panic!("{}", err);
     }
 
-fn finish_call(&mut self, func_id: u32, name: String) -> Expr {
+    fn finish_call(&mut self, func_id: u32, name: String) -> Expr {
         let mut args = Vec::new();
         if !self.check_id(std_ids::R_PAREN) {
             loop {

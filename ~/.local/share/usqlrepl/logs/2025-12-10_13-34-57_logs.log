@@ -1,0 +1,57 @@
+2025-12-10T11:34:57.064618Z  INFO usqlrepl: Application started.
+2025-12-10T11:34:57.064716Z  INFO usqlrepl: Selected language: UA
+2025-12-10T11:34:57.064735Z  INFO usqlrepl: Config path: .config/usqlrepl/config.toml
+2025-12-10T11:34:57.068444Z  INFO db::db: DB was created.
+2025-12-10T11:34:57.068569Z  INFO lexer::tokenizer: Parser initialized.
+2025-12-10T11:34:57.069540Z  INFO db::db: Lexem loaded successfully: структура
+2025-12-10T11:34:57.069964Z  INFO db::db: Lexem loaded successfully: Test
+2025-12-10T11:34:57.070380Z  INFO db::db: Lexem loaded successfully: {
+2025-12-10T11:34:57.070781Z  INFO db::db: Lexem loaded successfully: user_id
+2025-12-10T11:34:57.071203Z  INFO db::db: Lexem loaded successfully: :
+2025-12-10T11:34:57.071587Z  INFO db::db: Lexem loaded successfully: ціле
+2025-12-10T11:34:57.071918Z  INFO db::db: Lexem loaded successfully: ,
+2025-12-10T11:34:57.072221Z  INFO db::db: Lexem loaded successfully: username
+2025-12-10T11:34:57.072561Z  INFO db::db: Lexem loaded successfully: :
+2025-12-10T11:34:57.072880Z  INFO db::db: Lexem loaded successfully: рядок
+2025-12-10T11:34:57.073162Z  INFO db::db: Lexem loaded successfully: }
+2025-12-10T11:34:57.073440Z  INFO db::db: Lexem loaded successfully: функція
+2025-12-10T11:34:57.073707Z  INFO db::db: Lexem loaded successfully: Func
+2025-12-10T11:34:57.073982Z  INFO db::db: Lexem loaded successfully: (
+2025-12-10T11:34:57.074247Z  INFO db::db: Lexem loaded successfully: Test
+2025-12-10T11:34:57.074515Z  INFO db::db: Lexem loaded successfully: Дані
+2025-12-10T11:34:57.074806Z  INFO db::db: Lexem loaded successfully: )
+2025-12-10T11:34:57.075160Z  INFO db::db: Lexem loaded successfully: {
+2025-12-10T11:34:57.075534Z  INFO db::db: Lexem loaded successfully: змінна
+2025-12-10T11:34:57.075876Z  INFO db::db: Lexem loaded successfully: userid
+2025-12-10T11:34:57.076234Z  INFO db::db: Lexem loaded successfully: =
+2025-12-10T11:34:57.076604Z  INFO db::db: Lexem loaded successfully: Дані
+2025-12-10T11:34:57.076984Z  INFO db::db: Lexem loaded successfully: .
+2025-12-10T11:34:57.077333Z  INFO db::db: Lexem loaded successfully: user_id
+2025-12-10T11:34:57.077696Z  INFO db::db: Lexem loaded successfully: змінна
+2025-12-10T11:34:57.078028Z  INFO db::db: Lexem loaded successfully: usern
+2025-12-10T11:34:57.078371Z  INFO db::db: Lexem loaded successfully: =
+2025-12-10T11:34:57.078713Z  INFO db::db: Lexem loaded successfully: Дані
+2025-12-10T11:34:57.079127Z  INFO db::db: Lexem loaded successfully: .
+2025-12-10T11:34:57.079509Z  INFO db::db: Lexem loaded successfully: username
+2025-12-10T11:34:57.079862Z  INFO db::db: Lexem loaded successfully: друк
+2025-12-10T11:34:57.080206Z  INFO db::db: Lexem loaded successfully: (
+2025-12-10T11:34:57.080567Z  INFO db::db: Lexem loaded successfully: ,
+2025-12-10T11:34:57.080916Z  INFO db::db: Lexem loaded successfully: userid
+2025-12-10T11:34:57.081263Z  INFO db::db: Lexem loaded successfully: )
+2025-12-10T11:34:57.081614Z  INFO db::db: Lexem loaded successfully: друк
+2025-12-10T11:34:57.081963Z  INFO db::db: Lexem loaded successfully: (
+2025-12-10T11:34:57.082310Z  INFO db::db: Lexem loaded successfully: ,
+2025-12-10T11:34:57.082640Z  INFO db::db: Lexem loaded successfully: usern
+2025-12-10T11:34:57.082980Z  INFO db::db: Lexem loaded successfully: )
+2025-12-10T11:34:57.083317Z  INFO db::db: Lexem loaded successfully: }
+2025-12-10T11:34:57.083701Z  INFO db::db: Lexem loaded successfully: Func
+2025-12-10T11:34:57.084059Z  INFO db::db: Lexem loaded successfully: (
+2025-12-10T11:34:57.084383Z  INFO db::db: Lexem loaded successfully: Test
+2025-12-10T11:34:57.084731Z  INFO db::db: Lexem loaded successfully: (
+2025-12-10T11:34:57.085117Z  INFO db::db: Lexem loaded successfully: 1
+2025-12-10T11:34:57.085551Z  INFO db::db: Lexem loaded successfully: ,
+2025-12-10T11:34:57.085863Z  INFO db::db: Lexem loaded successfully: )
+2025-12-10T11:34:57.086114Z  INFO db::db: Lexem loaded successfully: )
+2025-12-10T11:34:57.086150Z  INFO lexer::ast: AstParser initialized.
+2025-12-10T11:34:57.086188Z  INFO interpreter::interpreter: --- Interpreter Started ---
+2025-12-10T11:34:57.086266Z  INFO interpreter::interpreter: --- Interpreter Finished ---

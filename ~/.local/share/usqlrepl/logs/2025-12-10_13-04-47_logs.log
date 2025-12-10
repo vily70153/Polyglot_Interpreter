@@ -1,0 +1,50 @@
+2025-12-10T11:04:47.700440Z  INFO usqlrepl: Application started.
+2025-12-10T11:04:47.700507Z  INFO usqlrepl: Selected language: UA
+2025-12-10T11:04:47.704046Z  INFO db::db: DB was created.
+2025-12-10T11:04:47.704128Z  INFO lexer::tokenizer: Parser initialized.
+2025-12-10T11:04:47.704580Z  INFO db::db: Lexem loaded successfully: структура
+2025-12-10T11:04:47.704848Z  INFO db::db: Lexem loaded successfully: Test
+2025-12-10T11:04:47.705098Z  INFO db::db: Lexem loaded successfully: {
+2025-12-10T11:04:47.705294Z  INFO db::db: Lexem loaded successfully: user_id
+2025-12-10T11:04:47.705515Z  INFO db::db: Lexem loaded successfully: :
+2025-12-10T11:04:47.705719Z  INFO db::db: Lexem loaded successfully: ціле
+2025-12-10T11:04:47.705918Z  INFO db::db: Lexem loaded successfully: ,
+2025-12-10T11:04:47.706139Z  INFO db::db: Lexem loaded successfully: username
+2025-12-10T11:04:47.706331Z  INFO db::db: Lexem loaded successfully: :
+2025-12-10T11:04:47.706553Z  INFO db::db: Lexem loaded successfully: рядок
+2025-12-10T11:04:47.706756Z  INFO db::db: Lexem loaded successfully: }
+2025-12-10T11:04:47.706984Z  INFO db::db: Lexem loaded successfully: функція
+2025-12-10T11:04:47.707167Z  INFO db::db: Lexem loaded successfully: Func
+2025-12-10T11:04:47.707356Z  INFO db::db: Lexem loaded successfully: (
+2025-12-10T11:04:47.707581Z  INFO db::db: Lexem loaded successfully: Test
+2025-12-10T11:04:47.707763Z  INFO db::db: Lexem loaded successfully: Дані
+2025-12-10T11:04:47.707952Z  INFO db::db: Lexem loaded successfully: )
+2025-12-10T11:04:47.708181Z  INFO db::db: Lexem loaded successfully: {
+2025-12-10T11:04:47.708371Z  INFO db::db: Lexem loaded successfully: змінна
+2025-12-10T11:04:47.708644Z  INFO db::db: Lexem loaded successfully: userid
+2025-12-10T11:04:47.708835Z  INFO db::db: Lexem loaded successfully: =
+2025-12-10T11:04:47.708997Z  INFO db::db: Lexem loaded successfully: Дані
+2025-12-10T11:04:47.709159Z  INFO db::db: Lexem loaded successfully: .
+2025-12-10T11:04:47.709313Z  INFO db::db: Lexem loaded successfully: user_id
+2025-12-10T11:04:47.709481Z  INFO db::db: Lexem loaded successfully: змінна
+2025-12-10T11:04:47.709634Z  INFO db::db: Lexem loaded successfully: usern
+2025-12-10T11:04:47.709792Z  INFO db::db: Lexem loaded successfully: =
+2025-12-10T11:04:47.709940Z  INFO db::db: Lexem loaded successfully: Дані
+2025-12-10T11:04:47.710094Z  INFO db::db: Lexem loaded successfully: .
+2025-12-10T11:04:47.710241Z  INFO db::db: Lexem loaded successfully: username
+2025-12-10T11:04:47.710393Z  INFO db::db: Lexem loaded successfully: друк
+2025-12-10T11:04:47.710556Z  INFO db::db: Lexem loaded successfully: (
+2025-12-10T11:04:47.710707Z  INFO db::db: Lexem loaded successfully: userid
+2025-12-10T11:04:47.710864Z  INFO db::db: Lexem loaded successfully: )
+2025-12-10T11:04:47.711019Z  INFO db::db: Lexem loaded successfully: }
+2025-12-10T11:04:47.711167Z  INFO db::db: Lexem loaded successfully: Func
+2025-12-10T11:04:47.711321Z  INFO db::db: Lexem loaded successfully: (
+2025-12-10T11:04:47.711471Z  INFO db::db: Lexem loaded successfully: Test
+2025-12-10T11:04:47.711627Z  INFO db::db: Lexem loaded successfully: (
+2025-12-10T11:04:47.711773Z  INFO db::db: Lexem loaded successfully: 1
+2025-12-10T11:04:47.711928Z  INFO db::db: Lexem loaded successfully: ,
+2025-12-10T11:04:47.712083Z  INFO db::db: Lexem loaded successfully: )
+2025-12-10T11:04:47.712235Z  INFO db::db: Lexem loaded successfully: )
+2025-12-10T11:04:47.712246Z  INFO lexer::ast: AstParser initialized.
+2025-12-10T11:04:47.712268Z  INFO interpreter::interpreter: --- Interpreter Started ---
+2025-12-10T11:04:47.712304Z  INFO interpreter::interpreter: --- Interpreter Finished ---

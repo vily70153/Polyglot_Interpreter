@@ -83,13 +83,10 @@ pub fn load_or_create_config() -> Config {
 
     if config_path.exists() {
         let content = fs::read_to_string(&config_path).expect("Cannot read config");
-        // Якщо файл є, але він битий (немає полів), ми спробуємо завантажити його, 
-        // а відсутні поля заповняться дефолтами завдяки #[serde(default)]
         match toml::from_str(&content) {
             Ok(cfg) => return cfg,
             Err(e) => {
                 eprintln!("Warning: Failed to parse config ({}), creating new one.", e);
-                // Fallthrough to create new config below
             }
         }
     }

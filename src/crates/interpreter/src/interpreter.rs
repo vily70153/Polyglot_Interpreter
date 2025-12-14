@@ -22,6 +22,8 @@ pub enum RuntimeValue {
     },
     Null,
     Void,
+
+    Return(Box<RuntimeValue>),
 }
 
 #[derive(Debug, Clone)]
@@ -66,6 +68,15 @@ impl Interpreter {
             struct_definitions: HashMap::new(),
         }
     }
+    fn is_truthy(val: &RuntimeValue) -> bool {
+        match val {
+            RuntimeValue::Bool(b) => *b,
+            RuntimeValue::Null => false,
+            RuntimeValue::Void => false,
+            RuntimeValue::Number(n) => *n != 0.0,
+            _ => true,
+        }
+    }
 
     pub fn interpret(&mut self, statements: Vec<Stmt>) {
         info!("--- Interpreter Started ---");
@@ -74,6 +85,16 @@ impl Interpreter {
         }
         info!("--- Interpreter Finished ---");
     }
+
+    // fn is_truthy(&self, val: &RuntimeValue) -> bool {
+    //     match val {
+    //         RuntimeValue::Bool(b) => *b,
+    //         RuntimeValue::Null => false,
+    //         RuntimeValue::Void => false,
+    //         RuntimeValue::Number(n) => *n != 0.0, // 0 - false, остальное true
+    //         _ => true,
+    //     }
+    // }
 
     fn execute(&mut self, stmt: Stmt) -> RuntimeValue {
         match stmt {
@@ -101,11 +122,61 @@ impl Interpreter {
             },
             Stmt::Expression(expr) => {
                 self.evaluate(expr)
-            }
+            },
+            Stmt::If { condition, then_branch, else_branch } => {
+                let cond_val = self.evaluate(condition);
+                // ВИПРАВЛЕНО: Self::is_truthy (без self.)
+                if Self::is_truthy(&cond_val) {
+                    return self.execute_block(then_branch);
+                } else if let Some(else_stmts) = else_branch {
+                    return self.execute_block(else_stmts);
+                }
+                RuntimeValue::Void
+            },
+
+            Stmt::While { condition, body } => {
+                // ВИПРАВЛЕНО: Self::is_truthy замість self.is_truthy
+                // Тепер конфлікту немає, бо ми не позичаємо self для перевірки істини
+                while Self::is_truthy(&self.evaluate(condition.clone())) {
+                    let result = self.execute_block(body.clone());
+                    if let RuntimeValue::Return(_) = result {
+                        return result;
+                    }
+                }
+                RuntimeValue::Void
+            },
+            Stmt::Return { value } => {
+                let ret_val = if let Some(expr) = value {
+                    self.evaluate(expr)
+                } else {
+                    RuntimeValue::Null
+                };
+                return RuntimeValue::Return(Box::new(ret_val));
+            },
+
+            Stmt::Expression(expr) => self.evaluate(expr),
         }
     }
 
-    fn evaluate(&mut self, expr: Expr) -> RuntimeValue {
+    fn execute_block(&mut self, statements: Vec<Stmt>) -> RuntimeValue {
+        let block_env = Rc::new(RefCell::new(Environment::new(Some(self.env.clone()))));
+        let previous_env = self.env.clone();
+        self.env = block_env;
+
+        let mut result = RuntimeValue::Void;
+        for stmt in statements {
+            result = self.execute(stmt);
+            
+            if let RuntimeValue::Return(_) = result {
+                break;
+            }
+        }
+
+        self.env = previous_env; // Возвращаем старый scope
+        result
+    }
+
+    pub fn evaluate(&mut self, expr: Expr) -> RuntimeValue {
         match expr {
             Expr::Number(n) => RuntimeValue::Number(n),
             Expr::StringLiteral(s) => RuntimeValue::String(s),
@@ -145,7 +216,6 @@ impl Interpreter {
     }
 
     fn call_function(&mut self, func_id: u32, func_name: String, args: Vec<Expr>) -> RuntimeValue {
-        // 1. NATIVE FUNCTIONS (Перевірка по ID)
         match func_id {
             std_ids::PRINT => { // 300
                 let mut output = Vec::new();
@@ -162,6 +232,9 @@ impl Interpreter {
                         }
                         RuntimeValue::Function { name, .. } => {
                             output.push(format!("[Function {}]", name))
+                        }
+                        RuntimeValue::Return(inner_val) => {
+                            output.push(format!("{:?}", inner_val))
                         }
                     }
                 }
@@ -215,7 +288,6 @@ impl Interpreter {
             };
         }
 
-        // 3. USER FUNCTIONS
         let func_val = {
             let env = self.env.borrow();
             env.get(&func_name)
@@ -242,12 +314,19 @@ impl Interpreter {
                 let previous_env = self.env.clone(); // Зберігаємо старий
                 self.env = func_env;                 // Включаємо новий
 
+                let mut return_value = RuntimeValue::Void; // Значення за замовчуванням
+
                 for stmt in body {
-                    self.execute(stmt.clone());
+                    let result = self.execute(stmt.clone());
+                    
+                    if let RuntimeValue::Return(val) = result {
+                        return_value = *val;
+                        break;
+                    }
                 }
 
-                self.env = previous_env; // Повертаємо старий контекст
-                return RuntimeValue::Void;
+                self.env = previous_env;
+                return return_value;
             },
             _ => {
                 error!("Undefined function '{}' (ID: {})", func_name, func_id);
@@ -263,11 +342,23 @@ impl Interpreter {
                 "-" => RuntimeValue::Number(a - b),
                 "*" => RuntimeValue::Number(a * b),
                 "/" => RuntimeValue::Number(a / b),
+                
+                "<" => RuntimeValue::Bool(a < b),
+                ">" => RuntimeValue::Bool(a > b),
+                "<=" => RuntimeValue::Bool(a <= b),
+                ">=" => RuntimeValue::Bool(a >= b),
+                "==" => RuntimeValue::Bool(a == b),
+                "!=" => RuntimeValue::Bool(a != b),
+                
                 _ => RuntimeValue::Null,
             },
             (RuntimeValue::String(a), RuntimeValue::String(b)) => {
                 if op == "+" { 
                     RuntimeValue::String(format!("{}{}", a, b)) 
+                } else if op == "==" {
+                    RuntimeValue::Bool(a == b)
+                } else if op == "!=" {
+                    RuntimeValue::Bool(a != b)
                 } else { 
                     RuntimeValue::Null 
                 }

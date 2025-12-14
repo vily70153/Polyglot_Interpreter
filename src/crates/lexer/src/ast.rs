@@ -41,6 +41,18 @@ pub enum Stmt {
         name: String,
         fields: Vec<(String, DataType)>,
     },
+    If {
+        condition: Expr,
+        then_branch: Vec<Stmt>,
+        else_branch: Option<Vec<Stmt>>,
+    },
+    While {
+        condition: Expr,
+        body: Vec<Stmt>,
+    },
+    Return {
+        value: Option<Expr>,
+    },
 }
 
 pub struct AstParser {
@@ -68,7 +80,48 @@ impl AstParser {
         if self.match_id(std_ids::STRUCT) || self.match_id(std_ids::CLASS) {
             return self.struct_declaration();
         }
+        if self.match_id(std_ids::IF) { return self.if_statement(); }
+        if self.match_id(std_ids::WHILE) { return self.while_statement(); }
+        if self.match_id(std_ids::RETURN) { return self.return_statement(); }
         self.statement()
+    }
+
+    fn if_statement(&mut self) -> Stmt {
+        self.consume_id(std_ids::L_PAREN, "Expect '(' after 'if'.");
+        let condition = self.expression();
+        self.consume_id(std_ids::R_PAREN, "Expect ')' after if condition.");
+
+        self.consume_id(std_ids::L_BRACE, "Expect '{' before if body.");
+        let then_branch = self.block();
+
+        let else_branch = if self.match_id(std_ids::ELSE) {
+            self.consume_id(std_ids::L_BRACE, "Expect '{' after 'else'.");
+            Some(self.block())
+        } else {
+            None
+        };
+
+        Stmt::If { condition, then_branch, else_branch }
+    }
+
+    fn while_statement(&mut self) -> Stmt {
+        self.consume_id(std_ids::L_PAREN, "Expect '(' after 'while'.");
+        let condition = self.expression();
+        self.consume_id(std_ids::R_PAREN, "Expect ')' after while condition.");
+
+        self.consume_id(std_ids::L_BRACE, "Expect '{' before while body.");
+        let body = self.block();
+
+        Stmt::While { condition, body }
+    }
+
+    fn return_statement(&mut self) -> Stmt {
+        let value = if !self.check_id(std_ids::SEMICOLON) {
+            Some(self.expression())
+        } else {
+            None
+        };
+        Stmt::Return { value }
     }
 
     fn parse_type(&mut self) -> DataType {
@@ -153,7 +206,25 @@ impl AstParser {
         statements
     }
     fn statement(&mut self) -> Stmt { Stmt::Expression(self.expression()) }
-    fn expression(&mut self) -> Expr { self.term() }
+    fn expression(&mut self) -> Expr {
+        self.comparison()
+    }
+    fn comparison(&mut self) -> Expr {
+        let mut expr = self.term();
+    
+        while self.match_ids(&[
+            std_ids::LT, std_ids::GT, std_ids::LTE, std_ids::GTE, std_ids::EQ, std_ids::NEQ
+        ]) {
+            let operator = self.previous().value.clone();
+            let right = self.term();
+            expr = Expr::BinaryOp {
+                left: Box::new(expr),
+                op: operator,
+                right: Box::new(right),
+            };
+        }
+        expr
+    }
     fn term(&mut self) -> Expr {
         let mut expr = self.factor();
         while self.match_ids(&[std_ids::PLUS, std_ids::MINUS]) {
